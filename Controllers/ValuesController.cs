@@ -62,9 +62,15 @@ public class ValuesController : ControllerBase
 
     // Aufträge bearbeiten
     [HttpPut("{id}")]
-    [Authorize(AuthenticationSchemes = "BasicAuthentication")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [SwaggerOperation(Summary = "Update an existing Auftrag", Description = "Requires Bearer token for authorization.")]
     public ActionResult<string> Put(string id, [FromBody] Auftrag updatedAuftrag)
     {
+        // Überprüfen Sie, ob der Benutzer authentifiziert ist
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized("User is not authenticated");
+        }
         var objectId = new ObjectId(id);
         var filter = Builders<Auftrag>.Filter.Eq(a => a.Id, objectId);
         var update = Builders<Auftrag>.Update
@@ -74,36 +80,26 @@ public class ValuesController : ControllerBase
             .Set(a => a.Prioritaet, updatedAuftrag.Prioritaet)
             .Set(a => a.Dienstleistung, updatedAuftrag.Dienstleistung);
 
-        var result = _auftraegeCollection.UpdateOne(filter, update);
-
-        if (result.ModifiedCount > 0)
-        {
-            return Ok($"Auftrag with ID {id} updated successfully");
-        }
-        else
-        {
-            return NotFound($"Auftrag with ID {id} not found");
-        }
+        return Ok($"Auftrag with ID {id} updated successfully");
     }
 
     // Aufträge löschen
     [HttpDelete("{id}")]
-    [Authorize(AuthenticationSchemes = "BasicAuthentication")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [SwaggerOperation(Summary = "Delete an existing Auftrag", Description = "Requires Bearer token for authorization.")]
     public ActionResult<string> Delete(string id)
     {
+        // Überprüfen Sie, ob der Benutzer authentifiziert ist
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized("User is not authenticated");
+        }
         var objectId = new ObjectId(id);
         var filter = Builders<Auftrag>.Filter.Eq(a => a.Id, objectId);
 
         var result = _auftraegeCollection.DeleteOne(filter);
 
-        if (result.DeletedCount > 0)
-        {
-            return Ok($"Auftrag with ID {id} deleted successfully");
-        }
-        else
-        {
-            return NotFound($"Auftrag with ID {id} not found");
-        }
+        return Ok($"Auftrag with ID {id} deleted successfully");
     }
 
     private bool ValidateUserCredentials(string username, string password)

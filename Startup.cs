@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 using SkiServiceMongoDB; 
 using SkiServiceMongoDB.Authentication;
 using SkiServiceMongoDB.Data;
-using static SkiServiceMongoDB.Authentication.BasicAuthenticationHandler;
+using static SkiServiceMongoDB.Authentication.AuthenticationHandler;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -48,9 +48,9 @@ public class Startup
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = "Anthony", // Geben Sie den Aussteller (Issuer) an
-                ValidAudience = "your_api_identifier", // Geben Sie die Audience (Resource) Ihrer API an
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234")) // Geben Sie den Secret Key an
+                ValidIssuer = "Anthony",
+                ValidAudience = "SkiServiceAPI",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234")) 
             };
         });
         services.AddControllers();

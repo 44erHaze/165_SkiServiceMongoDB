@@ -12,9 +12,9 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace SkiServiceMongoDB.Authentication
 {
-    public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class AuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        public BasicAuthenticationHandler(
+        public AuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
@@ -31,9 +31,12 @@ namespace SkiServiceMongoDB.Authentication
             var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
 
             if (authHeader.Scheme.ToLower() != "bearer")
+            {
                 return AuthenticateResult.Fail("Invalid Authorization Scheme");
+            }
 
             var token = authHeader.Parameter;
+
 
             if (string.IsNullOrEmpty(token))
                 return AuthenticateResult.Fail("Missing or empty Bearer token");
